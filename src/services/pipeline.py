@@ -43,9 +43,10 @@ class PipelineService:
             "responding", metrics, self._response.generate_responses
         )
 
-        sent = self._run_stage(
-            "sending", metrics, self._sending.send_pending
-        )
+        # sent = self._run_stage(
+        #     "sending", metrics, self._sending.send_pending
+        # )
+        sent = 0
 
         metrics.flush(self._db)
 
