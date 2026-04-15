@@ -2,7 +2,7 @@ import logging
 from typing import Any
 
 from src.domain.entities import Item, Tag
-from src.domain.enums import ItemType, Marketplace, Sentiment, Urgency
+from src.domain.enums import Emotion, Intent, ItemType, Marketplace, Responsibility, ResponseTone, Sentiment, Urgency
 from src.domain.interfaces import ITagRepository
 from src.repositories.base import BaseRepository
 
@@ -18,6 +18,13 @@ class TagRepository(BaseRepository[Tag], ITagRepository):
             item_id=row["item_id"],
             sentiment=Sentiment(row["sentiment"]) if row["sentiment"] else None,
             topic=row["topic"],
+            subtopic=row.get("subtopic"),
+            emotion=Emotion(row["emotion"]) if row.get("emotion") else None,
+            product_issue=row.get("product_issue"),
+            intent=Intent(row["intent"]) if row.get("intent") else None,
+            keywords=row.get("keywords"),
+            response_tone=ResponseTone(row["response_tone"]) if row.get("response_tone") else None,
+            responsibility=Responsibility(row["responsibility"]) if row.get("responsibility") else None,
             urgency=Urgency(row["urgency"]),
             requires_response=row["requires_response"],
             extra=row["extra"],
@@ -27,9 +34,10 @@ class TagRepository(BaseRepository[Tag], ITagRepository):
 
     def insert(self, tag: Tag) -> int:
         sql = """
-            INSERT INTO tags (item_id, sentiment, topic, urgency,
-                              requires_response, extra, model_name)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO tags (item_id, sentiment, topic, subtopic, emotion,
+                              product_issue, intent, keywords, response_tone,
+                              responsibility, urgency, requires_response, extra, model_name)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (item_id) DO NOTHING
             RETURNING id
         """
@@ -37,6 +45,13 @@ class TagRepository(BaseRepository[Tag], ITagRepository):
             tag.item_id,
             tag.sentiment.value if tag.sentiment else None,
             tag.topic,
+            tag.subtopic,
+            tag.emotion.value if tag.emotion else None,
+            tag.product_issue,
+            tag.intent.value if tag.intent else None,
+            tag.keywords,
+            tag.response_tone.value if tag.response_tone else None,
+            tag.responsibility.value if tag.responsibility else None,
             tag.urgency.value,
             tag.requires_response,
             self._json_dumps(tag.extra),
@@ -55,7 +70,9 @@ class TagRepository(BaseRepository[Tag], ITagRepository):
     def get_items_needing_response(self) -> list[tuple[Item, Tag]]:
         sql = """
             SELECT i.*, t.id as tag_id, t.item_id as t_item_id,
-                   t.sentiment, t.topic, t.urgency, t.requires_response,
+                   t.sentiment, t.topic, t.subtopic, t.emotion,
+                   t.product_issue, t.intent, t.keywords, t.response_tone, t.responsibility,
+                   t.urgency, t.requires_response,
                    t.extra as tag_extra, t.model_name as tag_model, t.tagged_at
             FROM tags t
             JOIN items i ON i.id = t.item_id
@@ -84,6 +101,13 @@ class TagRepository(BaseRepository[Tag], ITagRepository):
                     item_id=row["t_item_id"],
                     sentiment=Sentiment(row["sentiment"]) if row["sentiment"] else None,
                     topic=row["topic"],
+                    subtopic=row.get("subtopic"),
+                    emotion=Emotion(row["emotion"]) if row.get("emotion") else None,
+                    product_issue=row.get("product_issue"),
+                    intent=Intent(row["intent"]) if row.get("intent") else None,
+                    keywords=row.get("keywords"),
+                    response_tone=ResponseTone(row["response_tone"]) if row.get("response_tone") else None,
+                    responsibility=Responsibility(row["responsibility"]) if row.get("responsibility") else None,
                     urgency=Urgency(row["urgency"]),
                     requires_response=row["requires_response"],
                     extra=row["tag_extra"],

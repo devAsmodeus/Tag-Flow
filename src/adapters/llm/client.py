@@ -30,7 +30,12 @@ class OllamaClient:
     def _do_generate(self, model: str, prompt: str, timeout: float) -> str:
         response = self._client.post(
             f"{self._base_url}/api/generate",
-            json={"model": model, "prompt": prompt, "stream": False},
+            json={
+                "model": model,
+                "prompt": prompt,
+                "stream": False,
+                "think": False,
+            },
             timeout=timeout,
         )
         response.raise_for_status()

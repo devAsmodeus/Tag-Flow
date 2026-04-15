@@ -24,6 +24,37 @@ class Urgency(StrEnum):
     HIGH = "high"
 
 
+class Emotion(StrEnum):
+    ANGER = "anger"
+    DISAPPOINTMENT = "disappointment"
+    FRUSTRATION = "frustration"
+    SURPRISE = "surprise"
+    GRATITUDE = "gratitude"
+    INDIFFERENCE = "indifference"
+
+
+class Intent(StrEnum):
+    RETURN = "return"
+    EXCHANGE = "exchange"
+    COMPLAINT = "complaint"
+    INFO = "info"
+    GRATITUDE = "gratitude"
+
+
+class ResponseTone(StrEnum):
+    APOLOGY = "apology"
+    GRATITUDE = "gratitude"
+    CLARIFICATION = "clarification"
+    INFORMATIONAL = "informational"
+
+
+class Responsibility(StrEnum):
+    SELLER = "seller"
+    MARKETPLACE = "marketplace"
+    BOTH = "both"
+    NONE = "none"
+
+
 class SendStatus(StrEnum):
     PENDING = "pending"
     SENT = "sent"
